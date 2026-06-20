@@ -14,7 +14,10 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 
 SECRET_KEY = os.getenv('DJANGO_SECRET_KEY', 'django-insecure-change-me')
 DEBUG = os.getenv('DJANGO_DEBUG', 'True') == 'True'
-ALLOWED_HOSTS = [host.strip() for host in os.getenv('DJANGO_ALLOWED_HOSTS', '').split(',') if host.strip()]
+ALLOWED_HOSTS = [host.strip() for host in os.getenv(
+    "DJANGO_ALLOWED_HOSTS",
+    ".onrender.com,127.0.0.1,localhost"
+).split(",") if host.strip()]
 
 INSTALLED_APPS = [
     'django.contrib.admin',
