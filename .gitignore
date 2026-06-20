@@ -6,3 +6,5 @@ media/
 *.log
 cert.crt
 cert.key
+staticfiles/
+.env
