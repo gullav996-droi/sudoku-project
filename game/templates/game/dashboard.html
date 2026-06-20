@@ -1,0 +1,193 @@
+{% extends 'game/base.html' %}
+{% block title %}Dashboard · Sudoku Pro{% endblock %}
+{% block content %}
+<section class="dashboard-stage">
+    <div class="dashboard-hero glass-panel">
+        <div class="hero-background">
+            <span class="hero-orb orb-blue"></span>
+            <span class="hero-orb orb-pink"></span>
+            <span class="hero-orb orb-cyan"></span>
+            <span class="hero-blob blob-top"></span>
+            <span class="hero-blob blob-bottom"></span>
+        </div>
+        <div class="hero-copy">
+            <span class="eyebrow">Good day, {{ request.user.first_name|default:request.user.username }}</span>
+            <h1>Master your Sudoku streak</h1>
+            <p class="dashboard-description">Track progress, celebrate wins, and keep your focus sharp with every puzzle.</p>
+            <div class="hero-actions">
+                <a href="{% url 'play' %}?mode=free&difficulty=medium" class="button button-primary">New Puzzle</a>
+                <a href="{% url 'home' %}" class="button button-secondary">Home</a>
+            </div>
+        </div>
+        <div class="welcome-stats">
+            <div class="hero-chip chip-glow chip-violet">
+                <span>Win Rate</span>
+                <strong>{{ win_percentage }}%</strong>
+            </div>
+            <div class="hero-chip chip-glow chip-cyan">
+                <span>Current Streak</span>
+                <strong>{{ current_streak }}</strong>
+            </div>
+            <div class="hero-chip chip-glow chip-orange">
+                <span>Best Streak</span>
+                <strong>{{ best_streak }}</strong>
+            </div>
+        </div>
+    </div>
+</section>
+
+<section class="dashboard-grid">
+    <article class="stat-card stat-blue">
+        <div class="stat-meta">
+            <span class="stat-icon">🎮</span>
+            <span>Games Played</span>
+        </div>
+        <h2>{{ total_games_played }}</h2>
+        <div class="progress-wrap">
+            <div class="progress-fill" style="width: 100%;"></div>
+        </div>
+    </article>
+    <article class="stat-card stat-purple">
+        <div class="stat-meta">
+            <span class="stat-icon">🏆</span>
+            <span>Games Won</span>
+        </div>
+        <h2>{{ games_won }}</h2>
+        <div class="progress-wrap">
+            <div class="progress-fill" style="width: {{ win_percentage }}%;"></div>
+        </div>
+    </article>
+    <article class="stat-card stat-cyan">
+        <div class="stat-meta">
+            <span class="stat-icon">⚡</span>
+            <span>Fastest Time</span>
+        </div>
+        <h2>{{ fastest_time }}</h2>
+    </article>
+    <article class="stat-card stat-teal">
+        <div class="stat-meta">
+            <span class="stat-icon">⏱️</span>
+            <span>Average</span>
+        </div>
+        <h2>{{ average_time }}</h2>
+    </article>
+    <article class="stat-card stat-pink">
+        <div class="stat-meta">
+            <span class="stat-icon">✨</span>
+            <span>Achievements</span>
+        </div>
+        <h2>{{ achievements_count }}</h2>
+    </article>
+    <article class="stat-card stat-orange">
+        <div class="stat-meta">
+            <span class="stat-icon">🔥</span>
+            <span>Daily Streak</span>
+        </div>
+        <h2>{{ daily_streak }}</h2>
+    </article>
+</section>
+
+<section class="dashboard-details">
+    <div class="premium-daily-card">
+        <div class="premium-daily-header">
+            <div>
+                <span class="premium-label">Daily Challenge</span>
+                <h2 class="premium-title">Today's Puzzle</h2>
+            </div>
+            <div class="{% if daily_completed %}status-badge status-completed{% else %}live-badge{% endif %}">
+                {% if daily_completed %}Completed{% else %}Live{% endif %}
+            </div>
+        </div>
+        
+        <div class="premium-info-grid">
+            <div class="premium-info-card">
+                <span class="premium-info-label">Date</span>
+                <span class="premium-info-value">{{ today|date:'F j, Y' }}</span>
+            </div>
+            <div class="premium-info-card">
+                <span class="premium-info-label">Time</span>
+                <span class="premium-info-value">{{ current_time }}</span>
+            </div>
+            <div class="premium-info-card">
+                <span class="premium-info-label">Difficulty</span>
+                <span class="premium-info-value">{{ daily_challenge.get_difficulty_display }}</span>
+            </div>
+        </div>
+        
+        <p class="premium-desc">Sharpen your skills with the latest daily Sudoku challenge and build your streak.</p>
+        
+        {% if daily_completed %}
+            <div class="daily-completed-message" style="margin-top: 32px;">
+                <span class="completed-icon">✓</span>
+                <span>Today's challenge completed. Come back tomorrow!</span>
+            </div>
+        {% else %}
+            <a href="{% url 'play' %}?mode=daily&difficulty={{ daily_challenge.difficulty }}" class="premium-play-btn">Play Daily Challenge</a>
+        {% endif %}
+    </div>
+    <div class="detail-panel calendar-panel">
+        <div class="panel-header">
+            <div>
+                <span class="eyebrow">Challenge Calendar</span>
+                <h3>{{ month_label }}</h3>
+            </div>
+            <div class="calendar-legend">
+                <span class="legend-item completed"><span>✓</span> Completed</span>
+                <span class="legend-item today"><span>•</span> Today</span>
+            </div>
+        </div>
+        <div class="calendar-grid">
+            <div class="calendar-weekdays">
+                {% for day in week_days %}
+                    <div>{{ day }}</div>
+                {% endfor %}
+            </div>
+            <div class="calendar-weeks">
+                {% for week in calendar_month %}
+                    {% for day in week %}
+                        <div class="calendar-day {% if not day.in_month %}calendar-outside{% endif %} {% if day.is_today %}calendar-today{% endif %} {% if day.completed %}calendar-completed{% endif %} {% if day.locked %}calendar-locked{% endif %}">
+                            <span>{{ day.day }}</span>
+                            {% if day.completed %}
+                                <span class="day-tag">✓</span>
+                            {% elif day.is_today %}
+                                <span class="day-tag day-today">Today</span>
+                            {% endif %}
+                        </div>
+                    {% endfor %}
+                {% endfor %}
+            </div>
+        </div>
+    </div>
+    <div class="detail-panel recent-panel">
+        <div class="panel-header">
+            <div>
+                <span class="eyebrow">Recent Games</span>
+                <h3>Latest sessions</h3>
+            </div>
+        </div>
+        <div class="recent-list">
+            {% for game in recent_games %}
+                <div class="recent-item">
+                    <div>
+                        <strong>{{ game.get_difficulty_display }}</strong>
+                        <p class="text-muted mb-1">{{ game.get_mode_display }} · {{ game.updated_at|date:'M d, Y' }}</p>
+                    </div>
+                    <div class="recent-meta">
+                        <span>{{ game.score }} pts</span>
+                        <span>{{ game.mistakes }} mistakes</span>
+                    </div>
+                </div>
+            {% empty %}
+                <p class="text-muted">No recent games yet. Solve a puzzle to fill this list.</p>
+            {% endfor %}
+        </div>
+    </div>
+</section>
+
+<section class="dashboard-message glass-panel">
+    <div>
+        <h3>Today's motivation</h3>
+        <p class="panel-copy">"Every puzzle solved is a small victory. Keep your focus sharp and the numbers will fall into place."</p>
+    </div>
+</section>
+{% endblock %}

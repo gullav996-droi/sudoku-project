@@ -1,0 +1,70 @@
+{% extends 'game/base.html' %}
+{% block title %}Play - Sudoku Pro{% endblock %}
+{% block content %}
+<div class="board-shell">
+    <div class="d-flex justify-content-between align-items-center mb-3 flex-column flex-md-row gap-3">
+        <div>
+            <h3 id="game-mode" class="mb-1">{{ mode }}</h3>
+            <p id="game-difficulty" class="text-muted mb-0">Difficulty: {{ difficulty }}</p>
+        </div>
+        <div class="text-md-end">
+            <span class="status-chip">Timer: <span id="timer-value">00:00</span></span>
+            <span class="status-chip">Score: <span id="score-value">0</span></span>
+        </div>
+    </div>
+    <div id="game-status" class="game-status d-none mb-4" role="status" aria-live="polite"></div>
+    <div class="play-layout">
+        <div class="board-column">
+            <div
+                id="sudoku-board"
+                class="sudoku-grid"
+                role="grid"
+                aria-label="Sudoku puzzle"
+                data-puzzle='{{ puzzle_json|escapejs }}'
+                data-solution='{{ solution_json|escapejs }}'
+                data-progress='{{ progress_json|escapejs }}'
+                data-notes='{{ notes_json|escapejs }}'
+                data-mode='{{ mode }}'
+                data-difficulty='{{ difficulty }}'
+                data-session-id="{{ session_id }}"
+                data-complete-url="{% url 'complete_game_session' %}"
+                data-save-url="{% url 'save_game_session' %}"
+                data-tutorial-completed="{{ tutorial_completed|yesno:'true,false' }}"
+                data-tutorial-complete-url="{% url 'complete_tutorial' %}"
+            ></div>
+
+            <div class="stats-grid mt-4">
+                <div class="feature-card">
+                    <h6>Mistakes</h6>
+                    <p id="mistake-count">0</p>
+                </div>
+                <div class="feature-card">
+                    <h6>Hints Left</h6>
+                    <p id="hint-count">3</p>
+                </div>
+            </div>
+        </div>
+
+        <aside class="controls-column" aria-label="Game controls">
+            <div class="action-panel">
+                <button id="note-toggle" class="button button-secondary" type="button" aria-pressed="false">Note</button>
+                <button id="hint-button" class="button button-secondary" type="button">Hint</button>
+                <button id="pause-board" class="button button-secondary" type="button">Pause</button>
+                <button id="undo-move" class="button button-secondary" type="button">Undo</button>
+                <button id="redo-move" class="button button-secondary" type="button">Redo</button>
+                <button id="reset-board" class="button button-secondary" type="button">Reset</button>
+                <button id="solve-board" class="button button-secondary" type="button" disabled>Solve</button>
+                <button id="replay-tutorial" class="button button-secondary" type="button">Replay Tutorial</button>
+            </div>
+
+            <div id="note-mode-indicator" class="note-mode-indicator" aria-live="polite">Note Mode: OFF</div>
+
+            <div class="note-panel mt-4" aria-label="Number pad">
+                {% for n in '123456789' %}
+                    <button type="button" class="button button-secondary" data-number="{{ n }}" aria-label="Enter {{ n }}">{{ n }}</button>
+                {% endfor %}
+            </div>
+        </aside>
+    </div>
+</div>
+{% endblock %}

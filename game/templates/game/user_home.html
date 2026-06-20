@@ -1,0 +1,83 @@
+{% extends 'game/base.html' %}
+{% block title %}Welcome Back · Sudoku Pro{% endblock %}
+{% block content %}
+<section class="user-home-hero">
+    <div class="hero-stage glass-panel">
+        <div class="hero-copy">
+            <span class="hero-tag">Sudoku Studio</span>
+            <p class="eyebrow">Welcome back</p>
+            <h1>Welcome back, {{ profile.user.first_name|default:profile.user.username }}!</h1>
+            <p class="hero-description">Step into a luxurious Sudoku space .</p>
+            <div class="hero-actions">
+                <button type="button" class="button button-primary button-xl" data-bs-toggle="modal" data-bs-target="#difficultyModal">Play Now</button>
+                <a href="{% url 'dashboard' %}" class="button button-secondary">Dashboard</a>
+                <a href="{% url 'profile' %}" class="button button-secondary">Profile</a>
+            </div>
+            <p class="hero-note">Fresh puzzles, glowing motion, and elegant gameplay await.</p>
+        </div>
+        
+    </div>
+    <div class="hero-bubbles">
+        <span class="bubble bubble-1"></span>
+        <span class="bubble bubble-2"></span>
+        <span class="bubble bubble-3"></span>
+        <span class="bubble bubble-4"></span>
+    </div>
+</section>
+
+<section class="home-features">
+    <div class="feature-card feature-glow-1">
+        <span class="feature-icon">✨</span>
+        <h3>Instant challenge</h3>
+        <p>Launch your next puzzle with a premium difficulty picker designed for flow.</p>
+    </div>
+    <div class="feature-card feature-glow-2">
+        <span class="feature-icon">🌈</span>
+        <h3>Vibrant interface</h3>
+        <p>Experience bold gradients, animated motion, and a lively dashboard-first aesthetic.</p>
+    </div>
+    <div class="feature-card feature-glow-3">
+        <span class="feature-icon">🚀</span>
+        <h3>Focused gameplay</h3>
+        <p>Minimal distractions, polished layout, and smooth transitions keep you locked in.</p>
+    </div>
+</section>
+
+<div class="modal fade" id="difficultyModal" tabindex="-1" aria-labelledby="difficultyModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered modal-lg">
+        <div class="modal-content difficulty-modal">
+            <div class="modal-header border-0">
+                <div>
+                    <h5 class="modal-title" id="difficultyModalLabel">Choose your next puzzle</h5>
+                    <p class="modal-subtitle">Pick a difficulty and the game will start immediately.</p>
+                </div>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <div class="difficulty-grid">
+                    <a href="{% url 'play' %}?mode=free&difficulty=easy" class="difficulty-card difficulty-easy">
+                        <span class="difficulty-emoji">😊</span>
+                        <h2>Easy</h2>
+                        <p>Smooth entry-level puzzles with soft logic.</p>
+                    </a>
+                    <a href="{% url 'play' %}?mode=free&difficulty=medium" class="difficulty-card difficulty-medium">
+                        <span class="difficulty-emoji">⚡</span>
+                        <h2>Medium</h2>
+                        <p>Balanced challenge with elegant progression.</p>
+                    </a>
+                    <a href="{% url 'play' %}?mode=free&difficulty=hard" class="difficulty-card difficulty-hard">
+                        <span class="difficulty-emoji">🔥</span>
+                        <h2>Hard</h2>
+                        <p>Sharp, thrilling puzzles for focused play.</p>
+                    </a>
+                    <a href="{% url 'play' %}?mode=free&difficulty=master" class="difficulty-card difficulty-master">
+                        <span class="difficulty-emoji">👑</span>
+                        <h2>Master</h2>
+                        <p>Elite level puzzles for expert solvers.</p>
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

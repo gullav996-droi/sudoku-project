@@ -1,0 +1,15 @@
+{% extends 'game/base.html' %}
+{% block title %}Home · Sudoku Pro{% endblock %}
+{% block content %}
+<section class="landing-page">
+    <div class="landing-content">
+        <p class="eyebrow">Premium Sudoku</p>
+        <h1 class="landing-title">Welcome, Player!</h1>
+        <p class="landing-copy">A modern, colorful Sudoku experience built for clarity, focus, and beautiful gameplay.</p>
+        <div class="landing-actions">
+            <a href="{% url 'play' %}" class="button button-primary button-xl">Play</a>
+            
+        </div>
+    </div>
+</section>
+{% endblock %}

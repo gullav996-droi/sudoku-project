@@ -1,0 +1,82 @@
+{% extends 'game/base.html' %}
+{% block title %}Sudoku Academy - Sudoku Pro{% endblock %}
+{% block content %}
+<section class="academy-page" data-learning-page data-complete-url="{% url 'complete_lesson' %}">
+    <div class="academy-hero glass-panel">
+        <div>
+            <span class="eyebrow">Sudoku Academy</span>
+            <h1>Learn Sudoku one move at a time</h1>
+            <p>Start from the rules, practice after every lesson, and build up to advanced solving patterns.</p>
+        </div>
+        <div class="academy-progress-card">
+            <span>Progress</span>
+            <strong data-progress-percent>{{ percent_complete }}%</strong>
+            <div class="academy-progress-track" aria-label="Academy progress">
+                <span data-progress-bar style="width: {{ percent_complete }}%"></span>
+            </div>
+            <em><span data-xp>{{ progress.xp }}</span> XP earned</em>
+        </div>
+    </div>
+
+    <div class="academy-layout">
+        <aside class="lesson-list glass-panel" aria-label="Lessons">
+            {% for lesson in lessons %}
+                <button
+                    type="button"
+                    class="lesson-item {% if lesson.completed %}is-complete{% endif %} {% if lesson.locked %}is-locked{% endif %}"
+                    data-lesson-id="{{ lesson.id }}"
+                    {% if lesson.locked %}aria-disabled="true"{% endif %}
+                >
+                    <span data-lesson-marker>{{ lesson.id }}</span>
+                    <strong>{{ lesson.title }}</strong>
+                    <em>{% if lesson.completed %}Complete{% elif lesson.locked %}Locked{% else %}Ready{% endif %}</em>
+                </button>
+            {% endfor %}
+        </aside>
+
+        <article class="lesson-stage glass-panel">
+            <div class="lesson-illustration" aria-hidden="true">
+                <div class="mini-board">
+                    {% for n in '123456789' %}
+                        <span>{{ n }}</span>
+                    {% endfor %}
+                </div>
+            </div>
+            <span class="eyebrow" data-lesson-kicker>Lesson {{ progress.current_lesson }}</span>
+            <h2 data-lesson-title>{{ lessons.0.title }}</h2>
+            <p data-lesson-summary>{{ lessons.0.summary }}</p>
+            <div class="lesson-tip" data-lesson-focus>{{ lessons.0.focus }}</div>
+
+            <section class="practice-card" aria-labelledby="practice-title">
+                <h3 id="practice-title">Practice Challenge</h3>
+                <p data-practice-question>{{ lessons.0.practice.question }}</p>
+                <div class="practice-board" data-practice-board></div>
+                <div class="practice-instruction" data-practice-instruction>Click the empty cell, then choose a number.</div>
+                <div class="practice-options" data-practice-options></div>
+                <div class="practice-feedback" data-practice-feedback role="status" aria-live="polite"></div>
+                <div class="lesson-nav-actions">
+                    <button type="button" class="button button-secondary" data-prev-lesson>Previous</button>
+                    <button type="button" class="button button-primary" data-check-practice>Check Answer</button>
+                    <button type="button" class="button button-secondary" data-next-lesson disabled>Next</button>
+                </div>
+            </section>
+        </article>
+
+        <aside class="badge-panel glass-panel" aria-label="Achievements">
+            <span class="eyebrow">Achievements</span>
+            <h2>Badges</h2>
+            <div class="badge-grid">
+                {% for badge in badges %}
+                    <div class="academy-badge {% if badge.key in progress.achievements %}is-earned{% endif %}" data-badge="{{ badge.key }}">
+                        <strong>{{ badge.title }}</strong>
+                        <span>{{ badge.description }}</span>
+                    </div>
+                {% endfor %}
+            </div>
+        </aside>
+    </div>
+
+    {{ lessons_json|json_script:"learning-lessons-data" }}
+    {{ progress|json_script:"learning-progress-data" }}
+</section>
+{% endblock %}

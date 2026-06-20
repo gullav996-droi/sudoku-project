@@ -1,0 +1,53 @@
+{% extends 'game/base.html' %}
+{% block title %}Register · Sudoku Pro{% endblock %}
+{% block content %}
+<section class="auth-page">
+    <div class="auth-shell">
+        <div class="auth-card glass-panel">
+            <div class="auth-header">
+                <span class="eyebrow">Start your journey</span>
+                <h2>Create your premium account</h2>
+                <p class="text-muted">Sign up now to save progress, earn achievements, and track every win.</p>
+            </div>
+            <form method="post" novalidate class="auth-form">
+                {% csrf_token %}
+                {{ form.non_field_errors }}
+                <div class="form-group">
+                    {{ form.username.label_tag }}
+                    {{ form.username }}
+                    {{ form.username.errors }}
+                </div>
+                <div class="form-group">
+                    {{ form.email.label_tag }}
+                    {{ form.email }}
+                    {{ form.email.errors }}
+                </div>
+                <div class="form-group">
+                    {{ form.first_name.label_tag }}
+                    {{ form.first_name }}
+                </div>
+                <div class="form-group">
+                    {{ form.last_name.label_tag }}
+                    {{ form.last_name }}
+                </div>
+                <div class="form-group password-group">
+                    {{ form.password1.label_tag }}
+                    {{ form.password1 }}
+                    <button type="button" class="password-toggle" data-target="#{{ form.password1.id_for_label }}">Show</button>
+                    {{ form.password1.errors }}
+                </div>
+                <div class="form-group password-group">
+                    {{ form.password2.label_tag }}
+                    {{ form.password2 }}
+                    <button type="button" class="password-toggle" data-target="#{{ form.password2.id_for_label }}">Show</button>
+                    {{ form.password2.errors }}
+                </div>
+                <button type="submit" class="button button-primary w-100">Register</button>
+                <div class="auth-bottom mt-3">
+                    <a class="text-primary" href="{% url 'login' %}">Already have an account?</a>
+                </div>
+            </form>
+        </div>
+    </div>
+</section>
+{% endblock %}

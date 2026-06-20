@@ -1,0 +1,256 @@
+{% extends 'game/base.html' %}
+{% block title %}Profile - Sudoku Pro{% endblock %}
+{% block content %}
+<section class="profile-page" data-profile-page>
+    <div class="profile-hero glass-panel">
+        <div class="profile-avatar-wrap profile-avatar-wrap-xl">
+            {% if profile.avatar %}
+                <img class="profile-avatar profile-avatar-xl" src="{{ profile.avatar }}" alt="{{ display_name }} profile photo">
+            {% else %}
+                <div class="profile-avatar profile-avatar-xl profile-avatar-fallback" aria-label="{{ display_name }} initials">{{ initials }}</div>
+            {% endif %}
+            <span class="profile-status-dot" title="Active account"></span>
+        </div>
+        <div class="profile-hero-copy">
+            <span class="eyebrow">Player Profile</span>
+            <h1>{{ display_name }}</h1>
+            <p>{{ profile.bio|default:"Build your streak, sharpen your logic, and track every Sudoku win from one polished command center." }}</p>
+        </div>
+    </div>
+
+    <div class="profile-layout">
+        <section class="profile-main-card glass-panel">
+            <form method="post" enctype="multipart/form-data" novalidate id="profileForm">
+                {% csrf_token %}
+                {{ form.non_field_errors }}
+                <div class="profile-card-header">
+                    <div>
+                        <span class="eyebrow">Personal Details</span>
+                        <h2>Profile Information</h2>
+                    </div>
+                    <div class="profile-actions" data-view-actions>
+                        <button type="button" class="button button-secondary profile-edit-btn" data-edit-profile>Edit Profile</button>
+                    </div>
+                    <div class="profile-actions d-none" data-edit-actions>
+                        <button type="submit" name="profile_submit" class="button button-primary">Save Changes</button>
+                        <button type="button" class="button button-secondary" data-cancel-profile>Cancel</button>
+                    </div>
+                </div>
+
+                <div class="profile-photo-row">
+                    <div class="profile-avatar-wrap profile-avatar-wrap-sm">
+                        {% if profile.avatar %}
+                            <img class="profile-avatar profile-avatar-sm" src="{{ profile.avatar }}" alt="{{ display_name }} profile photo">
+                        {% else %}
+                            <div class="profile-avatar profile-avatar-sm profile-avatar-fallback">{{ initials }}</div>
+                        {% endif %}
+                    </div>
+                    <div class="profile-photo-controls">
+                        <div class="profile-photo-actions">
+                            <label for="avatarUpload" class="button button-secondary profile-photo-button" data-photo-button>Change Photo</label>
+                            <button type="submit" name="remove_photo" class="button button-secondary profile-remove-photo" data-remove-photo {% if not profile.avatar %}disabled{% endif %}>Remove Photo</button>
+                        </div>
+                        {{ form.avatar_upload }}
+                        {{ form.avatar_upload.errors }}
+                        <p class="profile-help">Upload a square image for the cleanest crop. Photos can be changed only while editing.</p>
+                    </div>
+                </div>
+
+                <div class="profile-form-grid">
+                    <div class="profile-field profile-field-locked">
+                        <label for="profileUsername">
+                            <span class="profile-lock-icon" aria-hidden="true">
+                                <svg viewBox="0 0 24 24" role="img"><path d="M7 10V8a5 5 0 0 1 10 0v2h1a2 2 0 0 1 2 2v7a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2v-7a2 2 0 0 1 2-2h1Zm2 0h6V8a3 3 0 0 0-6 0v2Z"/></svg>
+                            </span>
+                            Username
+                        </label>
+                        <input id="profileUsername" class="profile-input" value="{{ request.user.username }}" readonly aria-readonly="true">
+                    </div>
+                    <div class="profile-field">
+                        {{ form.first_name.label_tag }}
+                        {{ form.first_name }}
+                        {{ form.first_name.errors }}
+                    </div>
+                    <div class="profile-field">
+                        {{ form.last_name.label_tag }}
+                        {{ form.last_name }}
+                        {{ form.last_name.errors }}
+                    </div>
+                    <div class="profile-field">
+                        {{ form.email.label_tag }}
+                        {{ form.email }}
+                        {{ form.email.errors }}
+                    </div>
+                    <div class="profile-field profile-field-wide">
+                        {{ form.bio.label_tag }}
+                        {{ form.bio }}
+                        {{ form.bio.errors }}
+                    </div>
+                </div>
+            </form>
+        </section>
+
+        <aside class="profile-side-stack">
+            <section class="profile-panel glass-panel">
+                <span class="eyebrow">Account</span>
+                <h3>Account Information</h3>
+                <div class="profile-info-list">
+                    <div><span>Member Since</span><strong>{{ request.user.date_joined|date:"M d, Y" }}</strong></div>
+                    <div><span>Last Login</span><strong>{{ request.user.last_login|date:"M d, Y, g:i A"|default:"First session" }}</strong></div>
+                    <div><span>Account Status</span><strong>{% if request.user.is_active %}Active{% else %}Inactive{% endif %}</strong></div>
+                    <div><span>Registration Date</span><strong>{{ request.user.date_joined|date:"F j, Y" }}</strong></div>
+                </div>
+            </section>
+        </aside>
+    </div>
+
+    <section class="profile-stats-grid">
+        <article class="profile-stat-card glass-panel"><span>Games Played</span><strong>{{ total_games_played }}</strong></article>
+        <article class="profile-stat-card glass-panel"><span>Games Won</span><strong>{{ games_won }}</strong></article>
+        <article class="profile-stat-card glass-panel"><span>Win Rate</span><strong>{{ win_percentage }}%</strong></article>
+        <article class="profile-stat-card glass-panel"><span>Current Streak</span><strong>{{ current_streak }}</strong></article>
+        <article class="profile-stat-card glass-panel"><span>Best Streak</span><strong>{{ best_streak }}</strong></article>
+        <article class="profile-stat-card glass-panel"><span>Fastest Time</span><strong>{{ fastest_time }}</strong></article>
+        <article class="profile-stat-card glass-panel"><span>Average Time</span><strong>{{ average_time }}</strong></article>
+    </section>
+
+    <section class="profile-achievements glass-panel">
+        <div class="profile-card-header">
+            <div>
+                <span class="eyebrow">Milestones</span>
+                <h2>Achievements</h2>
+            </div>
+        </div>
+        <div class="achievement-grid">
+            {% for achievement in profile_achievements %}
+                <article class="achievement-card {% if achievement.earned %}is-earned{% else %}is-locked{% endif %}">
+                    <div class="achievement-icon achievement-{{ achievement.icon }}">{{ achievement.title|slice:":1" }}</div>
+                    <div>
+                        <strong>{{ achievement.title }}</strong>
+                        <span>{{ achievement.description }}</span>
+                    </div>
+                    <em>{% if achievement.earned %}Earned{% else %}Locked{% endif %}</em>
+                </article>
+            {% endfor %}
+        </div>
+    </section>
+
+    <section class="profile-history glass-panel">
+        <div class="profile-card-header">
+            <div>
+                <span class="eyebrow">Activity</span>
+                <h2>Game History</h2>
+            </div>
+            <form method="post" action="{% url 'delete_all_game_history' %}" data-confirm-delete-all>
+                {% csrf_token %}
+                <button type="submit" class="button button-secondary profile-danger-button" {% if not game_history %}disabled{% endif %}>Delete All History</button>
+            </form>
+        </div>
+        <div class="history-list">
+            {% for game in game_history %}
+                <article class="history-item">
+                    <div class="history-meta">
+                        <strong>{{ game.get_difficulty_display }}</strong>
+                        <span>{{ game.get_mode_display }} - {{ game.updated_at|date:"M d, Y" }}</span>
+                    </div>
+                    <div class="history-stats">
+                        <div><span>Score</span><strong>{{ game.score }}</strong></div>
+                        <div><span>Mistakes</span><strong>{{ game.mistakes }}</strong></div>
+                        <div><span>Date</span><strong>{{ game.updated_at|date:"M d" }}</strong></div>
+                    </div>
+                    <form method="post" action="{% url 'delete_game_history_item' game.id %}">
+                        {% csrf_token %}
+                        <button type="submit" class="history-delete-button" aria-label="Delete {{ game.get_difficulty_display }} game">
+                            <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M9 3h6l1 2h4v2H4V5h4l1-2Zm1 7h2v8h-2v-8Zm4 0h2v8h-2v-8ZM6 8h12l-1 13H7L6 8Z"/></svg>
+                        </button>
+                    </form>
+                </article>
+            {% empty %}
+                <div class="history-empty">
+                    <strong>No game history yet</strong>
+                    <span>Completed and attempted games will appear here.</span>
+                </div>
+            {% endfor %}
+        </div>
+    </section>
+
+    <section class="profile-settings glass-panel">
+        <div class="profile-card-header">
+            <div>
+                <span class="eyebrow">Preferences</span>
+                <h2>Game Settings</h2>
+            </div>
+        </div>
+        <form method="post" novalidate class="settings-premium-form">
+            {% csrf_token %}
+            {{ settings_form.non_field_errors }}
+            <div class="settings-grid">
+                <div class="profile-field">
+                    {{ settings_form.theme.label_tag }}
+                    {{ settings_form.theme }}
+                </div>
+                <div class="profile-field">
+                    {{ settings_form.language.label_tag }}
+                    {{ settings_form.language }}
+                </div>
+                <label class="premium-toggle">{{ settings_form.sound_enabled }}<span>Enable Sound</span></label>
+                <label class="premium-toggle">{{ settings_form.highlight_duplicates }}<span>Highlight Duplicates</span></label>
+                <label class="premium-toggle">{{ settings_form.animation_enabled }}<span>Smooth Animations</span></label>
+                <label class="premium-toggle">{{ settings_form.timer_visible }}<span>Timer Visible</span></label>
+            </div>
+            <button type="submit" name="settings_submit" class="button button-secondary">Save Settings</button>
+        </form>
+    </section>
+</section>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+        const page = document.querySelector('[data-profile-page]');
+        if (!page) return;
+
+        const fields = page.querySelectorAll('[data-profile-field]');
+        const editButton = page.querySelector('[data-edit-profile]');
+        const cancelButton = page.querySelector('[data-cancel-profile]');
+        const viewActions = page.querySelector('[data-view-actions]');
+        const editActions = page.querySelector('[data-edit-actions]');
+        const photoButton = page.querySelector('[data-photo-button]');
+        const removePhotoButton = page.querySelector('[data-remove-photo]');
+        const avatarUpload = page.querySelector('#avatarUpload');
+        const deleteAllForm = page.querySelector('[data-confirm-delete-all]');
+
+        const removePhotoAvailable = removePhotoButton && !removePhotoButton.hasAttribute('disabled');
+
+        const setEditing = function (editing) {
+            fields.forEach(function (field) {
+                if (field.type !== 'file') {
+                    field.disabled = !editing;
+                }
+            });
+            if (avatarUpload) avatarUpload.disabled = !editing;
+            if (photoButton) photoButton.classList.toggle('is-disabled', !editing);
+            if (removePhotoButton) {
+                removePhotoButton.disabled = !editing || !removePhotoAvailable;
+                removePhotoButton.classList.toggle('is-disabled', !editing || !removePhotoAvailable);
+            }
+            viewActions.classList.toggle('d-none', editing);
+            editActions.classList.toggle('d-none', !editing);
+            page.classList.toggle('is-editing', editing);
+        };
+
+        setEditing(false);
+        editButton.addEventListener('click', function () { setEditing(true); });
+        cancelButton.addEventListener('click', function () {
+            setEditing(false);
+            document.getElementById('profileForm').reset();
+        });
+
+        if (deleteAllForm) {
+            deleteAllForm.addEventListener('submit', function (event) {
+                if (!window.confirm('Delete all game history? This cannot be undone.')) {
+                    event.preventDefault();
+                }
+            });
+        }
+    });
+</script>
+{% endblock %}

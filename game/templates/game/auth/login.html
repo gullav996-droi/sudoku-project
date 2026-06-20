@@ -1,0 +1,38 @@
+{% extends 'game/base.html' %}
+{% block title %}Login · Sudoku Pro{% endblock %}
+{% block content %}
+<section class="auth-page">
+    <div class="auth-shell">
+        <div class="auth-card glass-panel">
+            <div class="auth-header">
+                <span class="eyebrow">Welcome back</span>
+                <h2>Login to continue your streak</h2>
+                <p class="text-muted">Access your saved puzzles, stats, and premium progress.</p>
+            </div>
+            <form method="post" novalidate class="auth-form">
+                {% csrf_token %}
+                {{ form.non_field_errors }}
+                <div class="form-group">
+                    {{ form.username.label_tag }}
+                    {{ form.username }}
+                    {{ form.username.errors }}
+                </div>
+                <div class="form-group password-group">
+                    {{ form.password.label_tag }}
+                    {{ form.password }}
+                    <button type="button" class="password-toggle" data-target="#{{ form.password.id_for_label }}">Show</button>
+                    {{ form.password.errors }}
+                </div>
+                <div class="form-check form-check-inline mb-4 align-items-center">
+                    {{ form.remember_me }} {{ form.remember_me.label_tag }}
+                </div>
+                <button type="submit" class="button button-primary w-100">Login</button>
+            </form>
+            <div class="auth-bottom">
+                <a class="text-primary" href="{% url 'register' %}">Create account</a>
+                <a class="text-secondary" href="{% url 'password_reset' %}">Forgot password?</a>
+            </div>
+        </div>
+    </div>
+</section>
+{% endblock %}

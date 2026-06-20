@@ -1,0 +1,34 @@
+{% extends 'game/base.html' %}
+{% block title %}Choose Difficulty · Sudoku Pro{% endblock %}
+{% block content %}
+<section class="menu-page">
+    <div class="menu-shell">
+        <div class="menu-header">
+            <h1>Choose your challenge</h1>
+            <p class="text-muted">Select a difficulty to begin a premium Sudoku puzzle.</p>
+        </div>
+        <div class="difficulty-grid">
+            <a href="{% url 'play' %}?mode=free&difficulty=easy" class="difficulty-card difficulty-easy">
+                <span class="difficulty-emoji">😊</span>
+                <h2>Easy</h2>
+                <p>Beginner-friendly boards with more clues.</p>
+            </a>
+            <a href="{% url 'play' %}?mode=free&difficulty=medium" class="difficulty-card difficulty-medium">
+                <span class="difficulty-emoji">⚡</span>
+                <h2>Medium</h2>
+                <p>Balanced puzzles for steady logic play.</p>
+            </a>
+            <a href="{% url 'play' %}?mode=free&difficulty=hard" class="difficulty-card difficulty-hard">
+                <span class="difficulty-emoji">🔥</span>
+                <h2>Hard</h2>
+                <p>Challenging boards with fewer clues.</p>
+            </a>
+            <a href="{% url 'play' %}?mode=free&difficulty=master" class="difficulty-card difficulty-master">
+                <span class="difficulty-emoji">👑</span>
+                <h2>Master</h2>
+                <p>Advanced puzzles for expert solvers.</p>
+            </a>
+        </div>
+    </div>
+</section>
+{% endblock %}
